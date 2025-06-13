@@ -38,50 +38,63 @@ const EditIncidentCard: React.FC<EditIncidentCardProps> = ({
   onSave,
   onCancel,
 }) => (
-  <Card className="bg-zinc-900 border-zinc-800 shadow-lg animate-in fade-in">
-    <CardContent className="flex flex-col gap-3">
-      <Input
-        className="bg-zinc-800 border-zinc-700 text-zinc-100"
-        value={editTitle}
-        onChange={(e) => setEditTitle(e.target.value)}
-        placeholder="Incident Title"
-      />
-      <Input
-        className="bg-zinc-800 border-zinc-700 text-zinc-100"
-        value={editDesc}
-        onChange={(e) => setEditDesc(e.target.value)}
-        placeholder="Description"
-      />
-      <Select
-        value={editStatus}
-        onValueChange={(v) => setEditStatus(v as OrgIncidentStatus)}
-      >
-        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100 w-48">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
-          {STATUS_OPTIONS.map((opt) => (
-            <SelectItem key={opt.value} value={opt.value}>
-              {opt.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <div className="flex gap-2 mt-4">
+  <Card className="bg-zinc-900 border border-zinc-800 shadow-md">
+    <CardContent className="p-6 space-y-5">
+      <div className="space-y-4">
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-zinc-300">Title</label>
+          <Input
+            className="bg-zinc-800 border-zinc-700 text-zinc-100"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+            placeholder="Enter incident title"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-zinc-300">
+            Description
+          </label>
+          <Input
+            className="bg-zinc-800 border-zinc-700 text-zinc-100"
+            value={editDesc}
+            onChange={(e) => setEditDesc(e.target.value)}
+            placeholder="Enter incident description"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-zinc-300">Status</label>
+          <Select
+            value={editStatus}
+            onValueChange={(v) => setEditStatus(v as OrgIncidentStatus)}
+          >
+            <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
+              {STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 pt-2">
         <Button
-          size="sm"
-          className="bg-green-700 hover:bg-green-600 text-white w-24"
+          className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
           onClick={onSave}
+          disabled={!editTitle.trim()}
         >
-          <Save className="w-4 h-4 mr-1" /> Save
+          <Save className="h-4 w-4" />
+          Save Changes
         </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="text-zinc-300 w-24"
-          onClick={onCancel}
-        >
-          <X className="w-4 h-4 mr-1" /> Cancel
+        <Button variant={"destructive"} onClick={onCancel}>
+          <X className="h-4 w-4" />
+          Cancel
         </Button>
       </div>
     </CardContent>

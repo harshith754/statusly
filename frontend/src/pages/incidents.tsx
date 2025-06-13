@@ -6,14 +6,14 @@ import NewIncidentCard from "@/components/incident-cards/NewIncidentCard";
 import EditIncidentCard from "@/components/incident-cards/EditIncidentCard";
 import IncidentCard from "@/components/incident-cards/IncidentCard";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Save, X } from "lucide-react";
 import {
   addIncidentToOrg,
   updateIncidentInOrg,
-  deleteIncidentInOrg,
   addIncidentUpdateToOrg,
   type OrgIncident,
   type OrgIncidentStatus,
+  deleteIncidentInOrg,
 } from "@/slices/organizationsSlice";
 
 const IncidentsPage: React.FC = () => {
@@ -91,10 +91,7 @@ const IncidentsPage: React.FC = () => {
   };
 
   const handleDeleteIncident = (incidentId: string) => {
-    dispatch({
-      type: "organizations/deleteIncidentInOrg",
-      payload: { slug, incidentId },
-    });
+    dispatch(deleteIncidentInOrg({ slug, incidentId }));
   };
 
   const handleAddUpdate = (incidentId: string) => {
@@ -193,20 +190,20 @@ const IncidentsPage: React.FC = () => {
                   value={updateMessage}
                   onChange={(e) => setUpdateMessage(e.target.value)}
                 />
-                <div className="flex gap-2 mt-2">
+
+                <div className="flex items-center gap-3 pt-2">
                   <Button
-                    size="sm"
-                    className="bg-blue-700 hover:bg-blue-600 text-white w-24"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
                     onClick={handleSaveUpdate}
                   >
+                    <Save className="h-4 w-4" />
                     Save Update
                   </Button>
                   <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-zinc-300 w-24"
+                    variant={"destructive"}
                     onClick={() => setUpdateIncidentId(null)}
                   >
+                    <X className="h-4 w-4" />
                     Cancel
                   </Button>
                 </div>

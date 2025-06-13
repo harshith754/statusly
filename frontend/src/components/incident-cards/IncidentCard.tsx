@@ -1,7 +1,7 @@
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Clock } from "lucide-react";
 import type { OrgIncident } from "@/slices/organizationsSlice";
 
 interface IncidentCardProps {
@@ -17,57 +17,91 @@ const IncidentCard: React.FC<IncidentCardProps> = ({
   onDelete,
   onAddUpdate,
 }) => (
-  <Card className="bg-zinc-900 border-zinc-800 shadow-md hover:shadow-xl transition-shadow">
-    <CardContent className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <span className="font-semibold text-lg text-zinc-100">
-          {incident.title}
-        </span>
-        <span
-          className={`px-2 py-1 rounded text-xs font-semibold ${
-            incident.status === "Resolved"
-              ? "bg-green-700 text-green-100"
-              : "bg-yellow-700 text-yellow-100"
-          }`}
-        >
-          {incident.status}
-        </span>
+  <Card className="inline-block bg-zinc-900/50 border border-zinc-800/50 shadow-lg hover:bg-zinc-900/70 transition-colors py-0">
+    <div className="flex items-center justify-between px-6 pt-5 pb-2">
+      <CardTitle className="text-slate-100 text-lg font-semibold">
+        {incident.title}
+      </CardTitle>
+      <span
+        className={`px-3 py-1.5 rounded-full text-xs font-medium shadow-sm ${
+          incident.status === "Resolved"
+            ? "bg-emerald-600/90 text-emerald-100 shadow-emerald-500/20"
+            : "bg-amber-600/90 text-amber-100 shadow-amber-500/20"
+        }`}
+      >
+        {incident.status}
+      </span>
+    </div>
+
+    <CardContent className="p-6 space-y-5 pt-2">
+      {/* Description */}
+      <div className="text-sm text-slate-300 leading-relaxed bg-slate-800/30 rounded-lg p-3 border border-slate-700/30">
+        {incident.description}
       </div>
-      <div className="text-sm text-zinc-400">{incident.description}</div>
-      <div className="flex gap-2 mt-2">
+
+      {/* Action Buttons */}
+      <div className="flex items-center justify-between flex-wrap gap-2 pt-1">
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            className="flex items-center gap-2 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white transition-colors duration-200 px-3 py-1 rounded"
+            onClick={onEdit}
+          >
+            <Pencil className="w-4 h-4" />
+            Edit
+          </Button>
+
+          <Button
+            size="sm"
+            className="flex items-center gap-2 bg-slate-800 text-slate-200 hover:bg-red-700 hover:text-white transition-colors duration-200 px-3 py-1 rounded"
+            onClick={onDelete}
+          >
+            <Trash2 className="w-4 h-4" />
+            Delete
+          </Button>
+        </div>
+
         <Button
           size="sm"
-          variant="secondary"
-          className="text-zinc-100 bg-zinc-800 hover:bg-zinc-700"
-          onClick={onEdit}
-        >
-          <Pencil className="w-4 h-4" />
-        </Button>
-        <Button size="sm" variant="destructive" onClick={onDelete}>
-          <Trash2 className="w-4 h-4" />
-        </Button>
-        <Button
-          size="sm"
-          variant="secondary"
-          className="text-zinc-100 bg-zinc-800 hover:bg-zinc-700"
+          className="flex items-center gap-2 bg-slate-800 text-slate-200 hover:bg-slate-700 hover:text-white transition-colors duration-200 px-3 py-1 rounded"
           onClick={onAddUpdate}
         >
-          + Update
+          <Plus className="w-4 h-4" />
+          Add Update
         </Button>
       </div>
-      <div className="mt-2">
-        <div className="text-xs text-zinc-400 mb-1">Updates:</div>
-        <ul className="space-y-1">
-          {incident.updates.map((u) => (
-            <li key={u.id} className="text-xs text-zinc-300">
-              <span className="text-zinc-500 mr-2">
-                {new Date(u.timestamp).toLocaleString()}
-              </span>
-              {u.message}
-            </li>
-          ))}
-        </ul>
-      </div>
+
+      {/* Updates Section */}
+      {incident.updates.length > 0 && (
+        <div className="pt-4 border-t border-slate-700/30">
+          <div className="flex items-center gap-2 mb-3">
+            <Clock className="w-4 h-4 text-slate-400" />
+            <span className="text-sm font-medium text-slate-300">
+              Updates ({incident.updates.length})
+            </span>
+          </div>
+          <div className="space-y-3 max-h-48 overflow-y-auto custom-scrollbar pr-1">
+            {incident.updates.map((u) => (
+              <div
+                key={u.id}
+                className="bg-slate-800/40 rounded-lg p-3 border border-slate-700/20 hover:bg-slate-800/60 transition-colors duration-200"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-2 h-2 bg-slate-500 rounded-full mt-2"></div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs text-slate-400 mb-1 font-medium">
+                      {new Date(u.timestamp).toLocaleString()}
+                    </div>
+                    <p className="text-sm text-slate-200 leading-relaxed">
+                      {u.message}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </CardContent>
   </Card>
 );

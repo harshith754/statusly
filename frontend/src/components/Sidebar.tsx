@@ -1,101 +1,163 @@
 import React from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { Button } from "./ui/button";
+import { useNavigate, useParams, Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { useSelector } from "react-redux";
 import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownContent,
-  DropdownItem,
-} from "./ui/dropdown";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  LayoutDashboard,
+  Server,
+  AlertTriangle,
+  Building2,
+  ChevronRight,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { slug } = useParams<{ slug: string }>();
-  const [orgInput, setOrgInput] = React.useState("");
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
+  const [selectedOrgSlug, setSelectedOrgSlug] = React.useState(
+    slug || "demo-org"
+  );
 
   const organizations = useSelector(
     (state: any) => state.organizations.organizations
   );
-  const selectedOrg = organizations.find((org: any) => org.slug === orgInput);
 
-  const handleOrgInput = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (orgInput.trim()) {
-      const safeSlug = encodeURIComponent(
-        orgInput.trim().replace(/\s+/g, "-").toLowerCase()
-      );
-      navigate(`/status/${safeSlug}`);
+  const selectedOrg = organizations.find(
+    (org: any) => org.slug === selectedOrgSlug
+  );
+
+  const handleOrgChange = (newSlug: string) => {
+    setSelectedOrgSlug(newSlug);
+
+    // Determine the current page type and navigate to the same page for the new org
+    if (location.pathname.includes("/dashboard/")) {
+      navigate(`/dashboard/${newSlug}`);
+    } else if (location.pathname.includes("/services/")) {
+      navigate(`/services/${newSlug}`);
+    } else if (location.pathname.includes("/incidents/")) {
+      navigate(`/incidents/${newSlug}`);
+    } else {
+      navigate(`/dashboard/${newSlug}`);
     }
   };
 
+  // Update selected org when URL changes
+  React.useEffect(() => {
+    if (slug && slug !== selectedOrgSlug) {
+      setSelectedOrgSlug(slug);
+    }
+  }, [slug, selectedOrgSlug]);
+
+  const navigationItems = [
+    {
+      name: "Dashboard",
+      href: `/dashboard/${selectedOrgSlug}`,
+      icon: LayoutDashboard,
+      active: location.pathname.includes("/dashboard/"),
+    },
+    {
+      name: "Services",
+      href: `/services/${selectedOrgSlug}`,
+      icon: Server,
+      active: location.pathname.includes("/services/"),
+    },
+    {
+      name: "Incidents",
+      href: `/incidents/${selectedOrgSlug}`,
+      icon: AlertTriangle,
+      active: location.pathname.includes("/incidents/"),
+    },
+  ];
+
   return (
-    <aside className="h-full min-h-screen w-56 bg-zinc-900 border-r border-zinc-800 flex flex-col p-4">
-      <form onSubmit={handleOrgInput} className="mb-6" autoComplete="off">
-        <label
-          htmlFor="org-input-admin"
-          className="block text-sm font-medium mb-1 text-zinc-200"
-        >
-          Organization Name
-        </label>
-        <Dropdown>
-          <DropdownTrigger
-            type="button"
-            onClick={() => setDropdownOpen((open) => !open)}
-            className="w-full flex justify-between items-center"
-            aria-haspopup="listbox"
-            aria-expanded={dropdownOpen}
-          >
-            {selectedOrg ? selectedOrg.name : "Enter name"}
-            <span className="ml-2">▼</span>
-          </DropdownTrigger>
-          {dropdownOpen && (
-            <DropdownContent role="listbox">
+    <aside className="min-h-screen w-64 bg-zinc-900/50 border-r border-zinc-800/50 shrink-0">
+      <div className="p-6 border-b border-zinc-800/50">
+        <div className="space-y-3">
+          <div className="flex items-center space-x-2 text-sm font-medium text-zinc-400">
+            <Building2 className="h-4 w-4" />
+            <span>Organization</span>
+          </div>
+
+          <Select value={selectedOrgSlug} onValueChange={handleOrgChange}>
+            <SelectTrigger className="w-full bg-zinc-800/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/70 focus:ring-zinc-600">
+              <SelectValue>
+                {selectedOrg ? selectedOrg.name : "Select organization"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-800 border-zinc-700">
               {organizations.map((org: any) => (
-                <DropdownItem
+                <SelectItem
                   key={org.slug}
-                  role="option"
-                  aria-selected={orgInput === org.slug}
-                  onClick={() => {
-                    setOrgInput(org.slug);
-                    setDropdownOpen(false);
-                  }}
+                  value={org.slug}
+                  className="text-zinc-100 focus:bg-zinc-700 focus:text-zinc-100"
                 >
-                  {org.name}
-                </DropdownItem>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                    <span>{org.name}</span>
+                  </div>
+                </SelectItem>
               ))}
-            </DropdownContent>
-          )}
-        </Dropdown>
-        <Button
-          type="submit"
-          className="cursor-pointer w-full transition-colors duration-200 bg-black hover:bg-zinc-950 text-white shadow-sm hover:shadow-md border border-zinc-900 mt-3"
-          variant={"default"}
-        >
-          Go
-        </Button>
-      </form>
-      <nav className="flex flex-col gap-2">
-        <Link
-          to={`/dashboard/${slug || "demo-org"}`}
-          className="text-zinc-200 hover:text-white hover:underline transition-colors"
-        >
-          Dashboard
-        </Link>
-        <Link
-          to={`/services/${slug || "demo-org"}`}
-          className="text-zinc-200 hover:text-white hover:underline transition-colors"
-        >
-          Services
-        </Link>
-        <Link
-          to={`/incidents/${slug || "demo-org"}`}
-          className="text-zinc-200 hover:text-white hover:underline transition-colors"
-        >
-          Incidents
-        </Link>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.name}
+              to={item.href}
+              className={cn(
+                "flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group",
+                item.active
+                  ? "bg-zinc-800 text-zinc-100 shadow-sm"
+                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+              )}
+            >
+              <Icon
+                className={cn(
+                  "h-4 w-4",
+                  item.active
+                    ? "text-zinc-300"
+                    : "text-zinc-500 group-hover:text-zinc-400"
+                )}
+              />
+              <span className="flex-1">{item.name}</span>
+              {item.active && (
+                <ChevronRight className="h-3 w-3 text-zinc-500" />
+              )}
+            </Link>
+          );
+        })}
       </nav>
+      {/* Footer */}
+      <div className="p-4 border-t border-zinc-800/50">
+        <div className="text-xs text-zinc-500 text-center">
+          {selectedOrg ? (
+            <div className="space-y-1">
+              <div className="font-medium text-zinc-400">
+                {selectedOrg.name}
+              </div>
+              <div className="flex items-center justify-center space-x-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                <span>Active</span>
+              </div>
+            </div>
+          ) : (
+            <span>No organization selected</span>
+          )}
+        </div>
+      </div>
     </aside>
   );
 };

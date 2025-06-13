@@ -37,10 +37,11 @@ const NewIncidentCard: React.FC<NewIncidentCardProps> = ({
   onAdd,
   onCancel,
 }) => (
-  <Card className="mb-8 bg-zinc-900 border-zinc-800 shadow-lg animate-in fade-in gap-4">
-    <CardTitle className="px-6">Add an Incident</CardTitle>
-
-    <CardContent className="flex flex-col md:flex-row gap-4 items-center">
+  <Card className="mb-8 bg-zinc-900 border border-zinc-800 shadow-md">
+    <CardTitle className="px-6 pt-4 text-zinc-200 text-base">
+      Add an Incident
+    </CardTitle>
+    <CardContent className="flex flex-col md:flex-row gap-4 items-center p-6">
       <Input
         className="bg-zinc-800 border-zinc-700 text-zinc-100"
         placeholder="Incident Title"
@@ -57,7 +58,7 @@ const NewIncidentCard: React.FC<NewIncidentCardProps> = ({
         value={newStatus}
         onValueChange={(v) => setNewStatus(v as OrgIncidentStatus)}
       >
-        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100 w-48">
+        <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100 w-44">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
@@ -69,12 +70,16 @@ const NewIncidentCard: React.FC<NewIncidentCardProps> = ({
         </SelectContent>
       </Select>
       <Button
-        className="w-24 bg-green-700 hover:bg-green-600 text-white"
+        className="w-24 bg-zinc-700 hover:bg-zinc-600 text-white"
         onClick={onAdd}
       >
         Add
       </Button>
-      <Button variant="destructive" className="w-24" onClick={onCancel}>
+      <Button
+        variant="ghost"
+        className="w-24 text-zinc-400 hover:text-zinc-200"
+        onClick={onCancel}
+      >
         Cancel
       </Button>
     </CardContent>
