@@ -2,10 +2,9 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import type { RootState } from "@/store";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Activity, Shield, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { AlertTriangle, Shield, AlertCircle } from "lucide-react";
 import Sidebar from "@/components/Sidebar";
 import IncidentTimeline from "@/components/incident-timeline";
 
@@ -46,45 +45,6 @@ const DashboardPage: React.FC = () => {
     (s) => s.status === "Operational"
   ).length;
   const totalServices = services.length;
-
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case "Operational":
-        return {
-          variant: "default" as const,
-          className:
-            "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20",
-          icon: Shield,
-        };
-      case "Degraded Performance":
-        return {
-          variant: "secondary" as const,
-          className:
-            "bg-yellow-500/10 text-yellow-400 border-yellow-500/20 hover:bg-yellow-500/20",
-          icon: Activity,
-        };
-      case "Partial Outage":
-        return {
-          variant: "destructive" as const,
-          className:
-            "bg-orange-500/10 text-orange-400 border-orange-500/20 hover:bg-orange-500/20",
-          icon: AlertTriangle,
-        };
-      case "Major Outage":
-        return {
-          variant: "destructive" as const,
-          className:
-            "bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20",
-          icon: AlertTriangle,
-        };
-      default:
-        return {
-          variant: "outline" as const,
-          className: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",
-          icon: AlertCircle,
-        };
-    }
-  };
 
   return (
     <div className="flex min-h-screen bg-zinc-950">
