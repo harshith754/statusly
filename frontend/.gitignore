@@ -25,12 +25,3 @@ dist-ssr
 
 .env
 package-lock.json
-# Dependency directories
-# If you are using pnpm, uncomment the next line
-# node_modules/.pnpm
-# If you are using yarn, uncomment the next line
-# node_modules/.yarn
-# If you are using pnpm, uncomment the next line
-# node_modules/.cache
-# If you are using pnpm, uncomment the next line
-# node_modules/.pnpm-lock.yaml

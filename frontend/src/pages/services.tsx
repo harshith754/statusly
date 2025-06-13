@@ -1,68 +1,149 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import type { RootState } from "../store";
-import Sidebar from "../components/Sidebar";
+import { useSelector, useDispatch } from "react-redux";
+import Sidebar from "@/components/Sidebar";
+import NewServiceCard from "@/components/service-cards/NewServiceCard";
+import EditServiceCard from "@/components/service-cards/EditServiceCard";
+import ServiceCard from "@/components/service-cards/ServiceCard";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { cn } from "../lib/utils";
+  addServiceToOrg,
+  updateServiceInOrg,
+  deleteServiceInOrg,
+  type OrgService,
+  type OrgServiceStatus,
+} from "@/slices/organizationsSlice";
 
 const ServicesPage: React.FC = () => {
-  const { slug } = useParams();
-  const orgSlug = slug || "demo-org";
-  const organization = useSelector((state: RootState) =>
-    state.organizations.organizations.find((o) => o.slug === orgSlug)
+  const params = useParams();
+  const slug = params.slug ?? "";
+
+  const dispatch = useDispatch();
+
+  const org = useSelector((state: any) =>
+    state.organizations.organizations.find((o: any) => o.slug === slug)
   );
-  if (!organization) {
+
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newStatus, setNewStatus] = useState<OrgServiceStatus>("Operational");
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editStatus, setEditStatus] = useState<OrgServiceStatus>("Operational");
+
+  const handleAddService = () => {
+    if (!newName.trim()) return;
+    dispatch(
+      addServiceToOrg({
+        slug,
+        service: {
+          id: Date.now().toString(),
+          name: newName,
+          status: newStatus,
+        },
+      })
+    );
+    setNewName("");
+    setNewStatus("Operational");
+    setAdding(false);
+  };
+
+  const handleEditService = (service: OrgService) => {
+    setEditingId(service.id);
+    setEditName(service.name);
+    setEditStatus(service.status);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingId) return;
+    dispatch(
+      updateServiceInOrg({
+        slug,
+        service: {
+          id: editingId,
+          name: editName,
+          status: editStatus,
+        },
+      })
+    );
+    setEditingId(null);
+  };
+
+  const handleDeleteService = (serviceId: string) => {
+    dispatch(
+      deleteServiceInOrg({
+        slug,
+        serviceId,
+      })
+    );
+  };
+
+  if (!org) {
     return (
       <div className="flex">
         <Sidebar />
-        <div className="flex-1 p-8 flex items-center justify-center">
-          <div className="text-zinc-400 text-lg">Organization not found.</div>
-        </div>
+        <div className="flex-1 p-8 text-zinc-100">Organization not found.</div>
       </div>
     );
   }
-  const services = organization?.services || [];
 
   return (
     <div className="flex">
       <Sidebar />
-      <div className="flex-1 p-8">
-        <h1 className="text-2xl font-bold mb-4 text-zinc-100">
-          Services ({orgSlug})
-        </h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          {services.map((service) => (
-            <Card
-              key={service.id}
-              className={cn("bg-zinc-900 border-zinc-800 text-zinc-100")}
-            >
-              <CardHeader>
-                <CardTitle>{service.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div
-                  className={cn(
-                    "mt-2 px-2 py-1 rounded text-sm font-medium",
-                    service.status === "Operational"
-                      ? "bg-green-900 text-green-300"
-                      : service.status === "Degraded Performance"
-                      ? "bg-yellow-900 text-yellow-300"
-                      : service.status === "Partial Outage"
-                      ? "bg-orange-900 text-orange-300"
-                      : "bg-red-900 text-red-300"
-                  )}
-                >
-                  {service.status}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      <div className="flex-1 p-8 text-zinc-100">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold tracking-tight">Services</h1>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setAdding((a) => !a)}
+            className="ml-2 border-zinc-700 bg-zinc-900 hover:bg-zinc-800 text-zinc-100"
+          >
+            <Plus className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {adding && (
+          <NewServiceCard
+            newName={newName}
+            setNewName={setNewName}
+            newStatus={newStatus}
+            setNewStatus={setNewStatus}
+            onAdd={handleAddService}
+            onCancel={() => setAdding(false)}
+          />
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {org.services.length === 0 && (
+            <div className="col-span-full text-center text-zinc-400">
+              No services yet. Click <Plus className="inline w-4 h-4" /> to add
+              one.
+            </div>
+          )}
+
+          {org.services.map((service: OrgService) =>
+            editingId === service.id ? (
+              <EditServiceCard
+                key={service.id}
+                editName={editName}
+                setEditName={setEditName}
+                editStatus={editStatus}
+                setEditStatus={setEditStatus}
+                onSave={handleSaveEdit}
+                onCancel={() => setEditingId(null)}
+              />
+            ) : (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                onEdit={() => handleEditService(service)}
+                onDelete={() => handleDeleteService(service.id)}
+              />
+            )
+          )}
         </div>
       </div>
     </div>

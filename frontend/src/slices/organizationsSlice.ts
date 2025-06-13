@@ -1,20 +1,24 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+export type OrgServiceStatus =
+  | "Operational"
+  | "Degraded Performance"
+  | "Partial Outage"
+  | "Major Outage";
+
 export interface OrgService {
   id: string;
   name: string;
-  status:
-    | "Operational"
-    | "Degraded Performance"
-    | "Partial Outage"
-    | "Major Outage";
+  status: OrgServiceStatus;
 }
+
+export type OrgIncidentStatus = "Ongoing" | "Resolved";
 
 export interface OrgIncident {
   id: string;
   title: string;
   description: string;
-  status: "Ongoing" | "Resolved";
+  status: OrgIncidentStatus;
   updates: { id: string; timestamp: string; message: string }[];
   affectedServices: string[];
 }
@@ -92,6 +96,19 @@ const organizationsSlice = createSlice({
         if (idx !== -1) org.services[idx] = action.payload.service;
       }
     },
+    deleteServiceInOrg: (
+      state,
+      action: PayloadAction<{ slug: string; serviceId: string }>
+    ) => {
+      const org = state.organizations.find(
+        (o) => o.slug === action.payload.slug
+      );
+      if (org) {
+        org.services = org.services.filter(
+          (s) => s.id !== action.payload.serviceId
+        );
+      }
+    },
     addIncidentToOrg: (
       state,
       action: PayloadAction<{ slug: string; incident: OrgIncident }>
@@ -115,6 +132,39 @@ const organizationsSlice = createSlice({
         if (idx !== -1) org.incidents[idx] = action.payload.incident;
       }
     },
+    deleteIncidentInOrg: (
+      state,
+      action: PayloadAction<{ slug: string; incidentId: string }>
+    ) => {
+      const org = state.organizations.find(
+        (o) => o.slug === action.payload.slug
+      );
+      if (org) {
+        org.incidents = org.incidents.filter(
+          (i) => i.id !== action.payload.incidentId
+        );
+      }
+    },
+    addIncidentUpdateToOrg: (
+      state,
+      action: PayloadAction<{
+        slug: string;
+        incidentId: string;
+        update: { id: string; timestamp: string; message: string };
+      }>
+    ) => {
+      const org = state.organizations.find(
+        (o) => o.slug === action.payload.slug
+      );
+      if (org) {
+        const incident = org.incidents.find(
+          (i) => i.id === action.payload.incidentId
+        );
+        if (incident) {
+          incident.updates.push(action.payload.update);
+        }
+      }
+    },
   },
 });
 
@@ -122,7 +172,11 @@ export const {
   addOrganization,
   addServiceToOrg,
   updateServiceInOrg,
+  deleteServiceInOrg,
   addIncidentToOrg,
   updateIncidentInOrg,
+  deleteIncidentInOrg,
+  addIncidentUpdateToOrg,
 } = organizationsSlice.actions;
+
 export default organizationsSlice.reducer;
