@@ -12,6 +12,8 @@ const API_URL = import.meta.env.VITE_API_URL;
 // Organizations
 // ----------------------------
 export const getOrganizations = async (): Promise<Organization[]> => {
+  
+  console.log("Fetching organizations from API:", API_URL);
   const res = await axios.get(`${API_URL}/organizations/`);
   console.log("Fetched organizations:", res.data);
   return res.data;

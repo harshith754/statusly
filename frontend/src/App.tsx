@@ -22,6 +22,7 @@ export default function App() {
 function AppContent() {
   const dispatch = useAppDispatch();
   useEffect(() => {
+    console.log("Fetching organizations...");
     dispatch(fetchOrganizations());
   }, [dispatch]);
 
