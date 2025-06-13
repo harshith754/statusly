@@ -158,7 +158,7 @@ const IncidentsPage: React.FC = () => {
           />
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {org.incidents.length === 0 && (
             <div className="col-span-full text-center text-zinc-400">
               No incidents yet. Click <Plus className="inline w-4 h-4" /> to add
@@ -182,7 +182,7 @@ const IncidentsPage: React.FC = () => {
             ) : updateIncidentId === incident.id ? (
               <div
                 key={incident.id}
-                className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 flex flex-col gap-3 shadow-lg"
+                className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 flex flex-col gap-3 shadow-lg w-full"
               >
                 <div className="mb-2 font-semibold text-lg">
                   {incident.title}
@@ -213,13 +213,15 @@ const IncidentsPage: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <IncidentCard
-                key={incident.id}
-                incident={incident}
-                onEdit={() => handleEditIncident(incident)}
-                onDelete={() => handleDeleteIncident(incident.id)}
-                onAddUpdate={() => handleAddUpdate(incident.id)}
-              />
+              <div className="w-full">
+                <IncidentCard
+                  key={incident.id}
+                  incident={incident}
+                  onEdit={() => handleEditIncident(incident)}
+                  onDelete={() => handleDeleteIncident(incident.id)}
+                  onAddUpdate={() => handleAddUpdate(incident.id)}
+                />
+              </div>
             )
           )}
         </div>

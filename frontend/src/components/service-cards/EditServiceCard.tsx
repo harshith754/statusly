@@ -87,7 +87,7 @@ const EditServiceCard: React.FC<EditServiceCardProps> = ({
         
         <div className="flex items-center gap-3 pt-2">
           <Button
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
+          className="bg-green-800/80 hover:bg-green-900/80 text-green-100 font-medium px-3 py-2 h-auto min-w-[110px]"
             onClick={onSave}
             disabled={!editName.trim()}
           >
@@ -95,7 +95,8 @@ const EditServiceCard: React.FC<EditServiceCardProps> = ({
             Save Changes
           </Button>
           <Button 
-            variant={"destructive"}
+          className="bg-red-900/80 hover:bg-red-950/80 text-red-100 font-medium px-3 py-2 h-auto min-w-[90px]"
+
             onClick={onCancel}
           >
             <X className="h-4 w-4" />

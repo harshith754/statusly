@@ -11,7 +11,7 @@ import { Settings, BarChart3 } from "lucide-react";
 
 const Navbar: React.FC = () => {
   const location = useLocation();
-  
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-zinc-800/50 bg-zinc-950/80 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/50">
       <div className="flex h-16 items-center justify-between px-6">
@@ -49,23 +49,19 @@ const Navbar: React.FC = () => {
         {/* Auth Section */}
         <div className="flex items-center">
           <SignedOut>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-zinc-700 bg-zinc-900 text-zinc-100 hover:bg-zinc-800 hover:text-white"
-            >
-              <SignInButton />
-            </Button>
+            <SignInButton />
           </SignedOut>
           <SignedIn>
             <div className="flex items-center space-x-2">
-              <UserButton 
+              <UserButton
                 appearance={{
                   elements: {
-                    avatarBox: "w-8 h-8 rounded-full ring-2 ring-zinc-700 hover:ring-zinc-600 transition-all",
+                    avatarBox:
+                      "w-8 h-8 rounded-full ring-2 ring-zinc-700 hover:ring-zinc-600 transition-all",
                     userButtonPopoverCard: "bg-zinc-900 border-zinc-700",
-                    userButtonPopoverActionButton: "text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800",
-                  }
+                    userButtonPopoverActionButton:
+                      "text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800",
+                  },
                 }}
               />
             </div>

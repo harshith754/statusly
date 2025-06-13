@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { OrgIncident, OrgService } from "@/types/organization";
+import { SignedIn } from "@clerk/clerk-react";
 
 interface ServiceCardProps {
   service: OrgService;
@@ -70,24 +71,26 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           <CardTitle className="text-base font-medium text-zinc-100 group-hover:text-white transition-colors">
             {service.name}
           </CardTitle>
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50"
-              onClick={onEdit}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
-              onClick={onDelete}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </div>
+          <SignedIn>
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50"
+                onClick={onEdit}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
+                onClick={onDelete}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </SignedIn>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
@@ -109,7 +112,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             <ul className=" pl-2 text-xs text-zinc-300 list-disc list-inside space-y-0.5">
               {relatedIncidents.map((incident) => (
                 <li key={incident.id}>
-                  <span className="text-xs font-semibold">{incident.title}</span>{" "}
+                  <span className="text-xs font-semibold">
+                    {incident.title}
+                  </span>{" "}
                   <span className="text-[10px] text-zinc-400">
                     ({incident.status})
                   </span>

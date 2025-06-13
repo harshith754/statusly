@@ -12,10 +12,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 // Organizations
 // ----------------------------
 export const getOrganizations = async (): Promise<Organization[]> => {
-  
-  console.log("Fetching organizations from API:", API_URL);
   const res = await axios.get(`${API_URL}/organizations/`);
-  console.log("Fetched organizations:", res.data);
   return res.data;
 };
 
@@ -65,7 +62,6 @@ export const createIncident = async (
   slug: string,
   incident: Omit<OrgIncident, "id" | "updates">
 ): Promise<OrgIncident> => {
-  console.log("Creating incident:", incident);
   const res = await axios.post(
     `${API_URL}/organizations/${slug}/incidents`,
     incident

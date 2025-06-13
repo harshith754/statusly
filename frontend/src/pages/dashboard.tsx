@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, Activity, Shield, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Sidebar from "@/components/Sidebar";
+import IncidentTimeline from "@/components/incident-timeline";
 
 const DashboardPage: React.FC = () => {
   const { slug } = useParams();
@@ -90,25 +91,25 @@ const DashboardPage: React.FC = () => {
       <Sidebar />
       <div className="flex-1">
         <div className="border-b border-zinc-800/50 bg-zinc-950/50 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/50">
-          <div className="px-8 py-6">
+          <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">
+                <h1 className="text-xl font-semibold tracking-tight text-zinc-100">
                   System Status
                 </h1>
-                <p className="text-sm text-zinc-400 mt-1">
+                <p className="text-xs text-zinc-400 mt-1">
                   {organization.name} • {operationalServices}/{totalServices}{" "}
                   services operational
                 </p>
               </div>
               <div className="flex items-center gap-3">
                 {hasMajorOutage ? (
-                  <Badge className="bg-red-500/10 text-red-400 border-red-500/20">
+                  <Badge className="bg-red-500/10 text-red-400 border-red-500/20 text-xs">
                     <AlertTriangle className="h-3 w-3 mr-1" />
                     System Issues
                   </Badge>
                 ) : (
-                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                  <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-xs">
                     <Shield className="h-3 w-3 mr-1" />
                     All Systems Operational
                   </Badge>
@@ -118,10 +119,10 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-8 space-y-8">
+        <div className="p-6 space-y-6">
           {/* Active Incidents */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-medium text-zinc-200">
+          <div className="space-y-3">
+            <h2 className="text-base font-medium text-zinc-200">
               Active Incidents
             </h2>
             {activeIncidents.length === 0 ? (
@@ -129,8 +130,8 @@ const DashboardPage: React.FC = () => {
                 <CardContent className="py-0">
                   <div className="flex items-center justify-center text-center space-y-2">
                     <div className="space-y-2">
-                      <Shield className="h-8 w-8 text-emerald-500 mx-auto" />
-                      <p className="text-sm font-medium text-zinc-300">
+                      <Shield className="h-7 w-7 text-emerald-500 mx-auto" />
+                      <p className="text-xs font-medium text-zinc-300">
                         No active incidents
                       </p>
                       <p className="text-xs text-zinc-500">
@@ -141,7 +142,7 @@ const DashboardPage: React.FC = () => {
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {activeIncidents.map((incident) => (
                   <Card
                     key={incident.id}
@@ -149,12 +150,12 @@ const DashboardPage: React.FC = () => {
                   >
                     <CardContent className="py-0">
                       <div className="flex items-start gap-3">
-                        <AlertTriangle className="h-5 w-5 text-orange-400 mt-0.5 flex-shrink-0" />
-                        <div className="space-y-1 flex-1">
-                          <h3 className="font-medium text-zinc-100">
+                        <AlertTriangle className="h-4 w-4 text-orange-400 mt-0.5 flex-shrink-0" />
+                        <div className="space-y-0.5 flex-1">
+                          <h3 className="font-medium text-zinc-100 text-sm">
                             {incident.title}
                           </h3>
-                          <p className="text-sm text-zinc-400">
+                          <p className="text-xs text-zinc-400">
                             {incident.description}
                           </p>
                           <Badge
@@ -172,38 +173,13 @@ const DashboardPage: React.FC = () => {
             )}
           </div>
 
-          {/* Services Grid */}
-          <div className="space-y-4">
-            <h2 className="text-lg font-medium text-zinc-200">Services</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {services.map((service) => {
-                const statusConfig = getStatusConfig(service.status);
-                const StatusIcon = statusConfig.icon;
-
-                return (
-                  <Card
-                    key={service.id}
-                    className="bg-zinc-900/50 border-zinc-800/50 hover:bg-zinc-900/70 transition-colors group gap-2"
-                  >
-                    <CardHeader className="pb-0">
-                      <CardTitle className="text-base font-medium text-zinc-100 group-hover:text-white transition-colors">
-                        {service.name}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <Badge
-                        className={cn(
-                          "inline-flex items-center gap-1.5 font-medium",
-                          statusConfig.className
-                        )}
-                      >
-                        <StatusIcon className="h-3 w-3" />
-                        {service.status}
-                      </Badge>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+          {/* Incident Timeline */}
+          <div className="mt-8">
+            <h2 className="text-base font-medium text-zinc-200 mb-2">
+              Recent Updates
+            </h2>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-4">
+              <IncidentTimeline />
             </div>
           </div>
         </div>
