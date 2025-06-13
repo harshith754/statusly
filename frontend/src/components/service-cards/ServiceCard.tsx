@@ -100,16 +100,17 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           <StatusIcon className="h-3 w-3" />
           {service.status}
         </Badge>
+
         {relatedIncidents.length > 0 && (
-          <div className="mt-3 space-y-1">
-            <p className="text-xs text-zinc-400 font-medium">
+          <div className="mt-2 space-y-0.5">
+            <p className="mt-5 text-sm text-zinc-200 font-medium mb-0.5">
               Related Incidents:
             </p>
-            <ul className="text-sm text-zinc-300 list-disc list-inside space-y-0.5">
+            <ul className=" pl-2 text-xs text-zinc-300 list-disc list-inside space-y-0.5">
               {relatedIncidents.map((incident) => (
                 <li key={incident.id}>
-                  <span className="font-semibold">{incident.title}</span>{" "}
-                  <span className="text-xs text-zinc-400">
+                  <span className="text-xs font-semibold">{incident.title}</span>{" "}
+                  <span className="text-[10px] text-zinc-400">
                     ({incident.status})
                   </span>
                 </li>

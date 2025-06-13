@@ -2,7 +2,7 @@ import React from "react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Plus, Clock } from "lucide-react";
-import type { OrgIncident } from "@/slices/organizationsSlice";
+import type { OrgIncident } from "@/types/organization";
 
 interface IncidentCardProps {
   incident: OrgIncident;

@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Save, X } from "lucide-react";
-import type { OrgIncidentStatus } from "@/slices/organizationsSlice";
+import type { OrgIncidentStatus } from "@/types/organization";
 
 const STATUS_OPTIONS: { value: OrgIncidentStatus; label: string }[] = [
   { value: "Ongoing", label: "Ongoing" },
