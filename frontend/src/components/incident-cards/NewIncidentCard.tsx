@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
-import type { OrgIncidentStatus } from "@/slices/organizationsSlice";
+import type { OrgIncidentStatus } from "@/types/organization";
 
 const STATUS_OPTIONS: { value: OrgIncidentStatus; label: string }[] = [
   { value: "Ongoing", label: "Ongoing" },
@@ -23,6 +23,9 @@ interface NewIncidentCardProps {
   setNewDesc: (v: string) => void;
   newStatus: OrgIncidentStatus;
   setNewStatus: (v: OrgIncidentStatus) => void;
+  newAffectedServices: string[];
+  setNewAffectedServices: (v: string[]) => void;
+  orgServices: { id: string; name: string }[];
   onAdd: () => void;
   onCancel: () => void;
 }
@@ -34,6 +37,9 @@ const NewIncidentCard: React.FC<NewIncidentCardProps> = ({
   setNewDesc,
   newStatus,
   setNewStatus,
+  newAffectedServices,
+  setNewAffectedServices,
+  orgServices,
   onAdd,
   onCancel,
 }) => (
@@ -69,6 +75,24 @@ const NewIncidentCard: React.FC<NewIncidentCardProps> = ({
           ))}
         </SelectContent>
       </Select>
+      <div className="flex flex-col gap-1">
+        <label className="text-zinc-300 text-sm">Affected Service</label>
+        <Select
+          value={newAffectedServices[0] || ""}
+          onValueChange={(v) => setNewAffectedServices([v])}
+        >
+          <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100 w-44">
+            <SelectValue placeholder="Select service" />
+          </SelectTrigger>
+          <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-100">
+            {orgServices.map((service) => (
+              <SelectItem key={service.id} value={service.id}>
+                {service.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
       <Button
         className="w-24 bg-zinc-700 hover:bg-zinc-600 text-white"
         onClick={onAdd}

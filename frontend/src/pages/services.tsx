@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useActionData, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Sidebar from "@/components/Sidebar";
 import NewServiceCard from "@/components/service-cards/NewServiceCard";
@@ -8,18 +8,19 @@ import ServiceCard from "@/components/service-cards/ServiceCard";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
-  addServiceToOrg,
-  updateServiceInOrg,
-  deleteServiceInOrg,
-  type OrgService,
-  type OrgServiceStatus,
-} from "@/slices/organizationsSlice";
+  createOrgService,
+  updateOrgService,
+  deleteOrgService,
+} from "@/slices/organizationsThunks";
+import type { OrgService, OrgServiceStatus } from "@/types/organization";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+
 
 const ServicesPage: React.FC = () => {
   const params = useParams();
   const slug = params.slug ?? "";
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const org = useSelector((state: any) =>
     state.organizations.organizations.find((o: any) => o.slug === slug)
@@ -36,7 +37,7 @@ const ServicesPage: React.FC = () => {
   const handleAddService = () => {
     if (!newName.trim()) return;
     dispatch(
-      addServiceToOrg({
+      createOrgService({
         slug,
         service: {
           id: Date.now().toString(),
@@ -59,7 +60,7 @@ const ServicesPage: React.FC = () => {
   const handleSaveEdit = () => {
     if (!editingId) return;
     dispatch(
-      updateServiceInOrg({
+      updateOrgService({
         slug,
         service: {
           id: editingId,
@@ -73,7 +74,7 @@ const ServicesPage: React.FC = () => {
 
   const handleDeleteService = (serviceId: string) => {
     dispatch(
-      deleteServiceInOrg({
+      deleteOrgService({
         slug,
         serviceId,
       })
@@ -138,7 +139,8 @@ const ServicesPage: React.FC = () => {
             ) : (
               <ServiceCard
                 key={service.id}
-                service={service}
+                  service={service}
+                  incidents={org.incidents} 
                 onEdit={() => handleEditService(service)}
                 onDelete={() => handleDeleteService(service.id)}
               />

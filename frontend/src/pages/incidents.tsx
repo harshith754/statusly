@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import Sidebar from "@/components/Sidebar";
 import NewIncidentCard from "@/components/incident-cards/NewIncidentCard";
 import EditIncidentCard from "@/components/incident-cards/EditIncidentCard";
@@ -8,19 +8,20 @@ import IncidentCard from "@/components/incident-cards/IncidentCard";
 import { Button } from "@/components/ui/button";
 import { Plus, Save, X } from "lucide-react";
 import {
-  addIncidentToOrg,
-  updateIncidentInOrg,
-  addIncidentUpdateToOrg,
-  type OrgIncident,
-  type OrgIncidentStatus,
-  deleteIncidentInOrg,
-} from "@/slices/organizationsSlice";
+  createOrgIncident,
+  updateOrgIncident,
+  deleteOrgIncident,
+  createIncidentUpdate,
+} from "@/slices/organizationsThunks";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { v4 as uuidv4 } from "uuid";
+import type { OrgIncident, OrgIncidentStatus } from "@/types/organization";
 
 const IncidentsPage: React.FC = () => {
   const params = useParams();
   const slug = params.slug ?? "";
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const org = useSelector((state: any) =>
     state.organizations.organizations.find((o: any) => o.slug === slug)
@@ -30,34 +31,35 @@ const IncidentsPage: React.FC = () => {
   const [newTitle, setNewTitle] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newStatus, setNewStatus] = useState<OrgIncidentStatus>("Ongoing");
+  const [newAffectedServices, setNewAffectedServices] = useState<string[]>([]);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
   const [editStatus, setEditStatus] = useState<OrgIncidentStatus>("Ongoing");
 
-  // For adding an update to an incident
   const [updateIncidentId, setUpdateIncidentId] = useState<string | null>(null);
   const [updateMessage, setUpdateMessage] = useState("");
 
   const handleAddIncident = () => {
     if (!newTitle.trim() || !newDesc.trim()) return;
     dispatch(
-      addIncidentToOrg({
+      createOrgIncident({
         slug,
         incident: {
-          id: Date.now().toString(),
+          id: uuidv4(),
           title: newTitle,
           description: newDesc,
           status: newStatus,
           updates: [],
-          affectedServices: [],
+          affected_services: newAffectedServices,
         },
       })
     );
     setNewTitle("");
     setNewDesc("");
     setNewStatus("Ongoing");
+    setNewAffectedServices([]);
     setAdding(false);
   };
 
@@ -70,20 +72,19 @@ const IncidentsPage: React.FC = () => {
 
   const handleSaveEdit = () => {
     if (!editingId) return;
+    const original = org?.incidents.find(
+      (i: OrgIncident) => i.id === editingId
+    );
     dispatch(
-      updateIncidentInOrg({
+      updateOrgIncident({
         slug,
         incident: {
           id: editingId,
           title: editTitle,
           description: editDesc,
           status: editStatus,
-          updates:
-            org?.incidents.find((i: OrgIncident) => i.id === editingId)
-              ?.updates || [],
-          affectedServices:
-            org?.incidents.find((i: OrgIncident) => i.id === editingId)
-              ?.affectedServices || [],
+          updates: original?.updates || [],
+          affected_services: original?.affected_services || [],
         },
       })
     );
@@ -91,7 +92,7 @@ const IncidentsPage: React.FC = () => {
   };
 
   const handleDeleteIncident = (incidentId: string) => {
-    dispatch(deleteIncidentInOrg({ slug, incidentId }));
+    dispatch(deleteOrgIncident({ slug, incidentId }));
   };
 
   const handleAddUpdate = (incidentId: string) => {
@@ -102,11 +103,11 @@ const IncidentsPage: React.FC = () => {
   const handleSaveUpdate = () => {
     if (!updateIncidentId || !updateMessage.trim()) return;
     dispatch(
-      addIncidentUpdateToOrg({
+      createIncidentUpdate({
         slug,
         incidentId: updateIncidentId,
         update: {
-          id: Date.now().toString(),
+          id: uuidv4(), // Use random UUID for id
           timestamp: new Date().toISOString(),
           message: updateMessage,
         },
@@ -149,6 +150,9 @@ const IncidentsPage: React.FC = () => {
             setNewDesc={setNewDesc}
             newStatus={newStatus}
             setNewStatus={setNewStatus}
+            newAffectedServices={newAffectedServices}
+            setNewAffectedServices={setNewAffectedServices}
+            orgServices={org?.services || []}
             onAdd={handleAddIncident}
             onCancel={() => setAdding(false)}
           />

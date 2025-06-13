@@ -2,47 +2,60 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Shield, Activity, AlertTriangle, AlertCircle } from "lucide-react";
+import {
+  Pencil,
+  Trash2,
+  Shield,
+  Activity,
+  AlertTriangle,
+  AlertCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { OrgService } from "@/slices/organizationsSlice";
+import type { OrgIncident, OrgService } from "@/types/organization";
 
 interface ServiceCardProps {
   service: OrgService;
   onEdit: () => void;
   onDelete: () => void;
+  incidents: OrgIncident[];
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
   onEdit,
   onDelete,
+  incidents,
 }) => {
+  const relatedIncidents = incidents.filter((incident) =>
+    incident.affected_services.includes(service.id)
+  );
+
   const getStatusConfig = (status: string) => {
     switch (status) {
       case "Operational":
-        return { 
+        return {
           className: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-          icon: Shield
+          icon: Shield,
         };
       case "Degraded Performance":
-        return { 
+        return {
           className: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-          icon: Activity
+          icon: Activity,
         };
       case "Partial Outage":
-        return { 
+        return {
           className: "bg-orange-500/10 text-orange-400 border-orange-500/20",
-          icon: AlertTriangle
+          icon: AlertTriangle,
         };
       case "Major Outage":
-        return { 
+        return {
           className: "bg-red-500/10 text-red-400 border-red-500/20",
-          icon: AlertTriangle
+          icon: AlertTriangle,
         };
       default:
-        return { 
+        return {
           className: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",
-          icon: AlertCircle
+          icon: AlertCircle,
         };
     }
   };
@@ -87,6 +100,23 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           <StatusIcon className="h-3 w-3" />
           {service.status}
         </Badge>
+        {relatedIncidents.length > 0 && (
+          <div className="mt-3 space-y-1">
+            <p className="text-xs text-zinc-400 font-medium">
+              Related Incidents:
+            </p>
+            <ul className="text-sm text-zinc-300 list-disc list-inside space-y-0.5">
+              {relatedIncidents.map((incident) => (
+                <li key={incident.id}>
+                  <span className="font-semibold">{incident.title}</span>{" "}
+                  <span className="text-xs text-zinc-400">
+                    ({incident.status})
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

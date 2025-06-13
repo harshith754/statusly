@@ -1,150 +1,28 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-
-export type OrgServiceStatus =
-  | "Operational"
-  | "Degraded Performance"
-  | "Partial Outage"
-  | "Major Outage";
-
-export interface OrgService {
-  id: string;
-  name: string;
-  status: OrgServiceStatus;
-}
-
-export type OrgIncidentStatus = "Ongoing" | "Resolved";
-
-export interface OrgIncident {
-  id: string;
-  title: string;
-  description: string;
-  status: OrgIncidentStatus;
-  updates: { id: string; timestamp: string; message: string }[];
-  affectedServices: string[];
-}
-
-export interface Organization {
-  slug: string;
-  name: string;
-  services: OrgService[];
-  incidents: OrgIncident[];
-}
-
-interface OrganizationsState {
-  organizations: Organization[];
-}
+import type { OrganizationsState } from "@/types/organization";
+import {
+  createIncidentUpdate,
+  createOrgIncident,
+  createOrgService,
+  deleteOrgIncident,
+  deleteOrgService,
+  fetchOrganizations,
+  updateOrgIncident,
+  updateOrgService,
+} from "./organizationsThunks";
 
 const initialState: OrganizationsState = {
-  organizations: [
-    {
-      slug: "demo-org",
-      name: "Demo Org",
-      services: [
-        { id: "1", name: "API Gateway", status: "Operational" },
-        { id: "2", name: "Database", status: "Degraded Performance" },
-        { id: "3", name: "Frontend", status: "Operational" },
-        { id: "4", name: "Auth", status: "Major Outage" },
-        { id: "5", name: "Email", status: "Operational" },
-      ],
-      incidents: [
-        {
-          id: "inc1",
-          title: "Database Outage",
-          description: "Database is currently unreachable.",
-          status: "Ongoing",
-          updates: [
-            {
-              id: "u1",
-              timestamp: new Date().toISOString(),
-              message: "Investigating the issue.",
-            },
-          ],
-          affectedServices: ["2"],
-        },
-      ],
-    },
-  ],
+  organizations: [],
+  loading: false,
+  error: null,
 };
+
+// SLICE
 
 const organizationsSlice = createSlice({
   name: "organizations",
   initialState,
   reducers: {
-    addOrganization: (state, action: PayloadAction<Organization>) => {
-      state.organizations.push(action.payload);
-    },
-    addServiceToOrg: (
-      state,
-      action: PayloadAction<{ slug: string; service: OrgService }>
-    ) => {
-      const org = state.organizations.find(
-        (o) => o.slug === action.payload.slug
-      );
-      if (org) org.services.push(action.payload.service);
-    },
-    updateServiceInOrg: (
-      state,
-      action: PayloadAction<{ slug: string; service: OrgService }>
-    ) => {
-      const org = state.organizations.find(
-        (o) => o.slug === action.payload.slug
-      );
-      if (org) {
-        const idx = org.services.findIndex(
-          (s) => s.id === action.payload.service.id
-        );
-        if (idx !== -1) org.services[idx] = action.payload.service;
-      }
-    },
-    deleteServiceInOrg: (
-      state,
-      action: PayloadAction<{ slug: string; serviceId: string }>
-    ) => {
-      const org = state.organizations.find(
-        (o) => o.slug === action.payload.slug
-      );
-      if (org) {
-        org.services = org.services.filter(
-          (s) => s.id !== action.payload.serviceId
-        );
-      }
-    },
-    addIncidentToOrg: (
-      state,
-      action: PayloadAction<{ slug: string; incident: OrgIncident }>
-    ) => {
-      const org = state.organizations.find(
-        (o) => o.slug === action.payload.slug
-      );
-      if (org) org.incidents.push(action.payload.incident);
-    },
-    updateIncidentInOrg: (
-      state,
-      action: PayloadAction<{ slug: string; incident: OrgIncident }>
-    ) => {
-      const org = state.organizations.find(
-        (o) => o.slug === action.payload.slug
-      );
-      if (org) {
-        const idx = org.incidents.findIndex(
-          (i) => i.id === action.payload.incident.id
-        );
-        if (idx !== -1) org.incidents[idx] = action.payload.incident;
-      }
-    },
-    deleteIncidentInOrg: (
-      state,
-      action: PayloadAction<{ slug: string; incidentId: string }>
-    ) => {
-      const org = state.organizations.find(
-        (o) => o.slug === action.payload.slug
-      );
-      if (org) {
-        org.incidents = org.incidents.filter(
-          (i) => i.id !== action.payload.incidentId
-        );
-      }
-    },
     addIncidentUpdateToOrg: (
       state,
       action: PayloadAction<{
@@ -156,27 +34,97 @@ const organizationsSlice = createSlice({
       const org = state.organizations.find(
         (o) => o.slug === action.payload.slug
       );
-      if (org) {
-        const incident = org.incidents.find(
-          (i) => i.id === action.payload.incidentId
-        );
-        if (incident) {
-          incident.updates.push(action.payload.update);
-        }
-      }
+      const incident = org?.incidents.find(
+        (i) => i.id === action.payload.incidentId
+      );
+      incident?.updates.push(action.payload.update);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      // FETCH
+      .addCase(fetchOrganizations.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchOrganizations.fulfilled, (state, action) => {
+        state.organizations = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchOrganizations.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Failed to load organizations";
+      })
+
+      // SERVICES
+      .addCase(createOrgService.fulfilled, (state, action) => {
+        const org = state.organizations.find(
+          (o) => o.slug === action.payload.slug
+        );
+        org?.services.push(action.payload.service);
+      })
+      .addCase(updateOrgService.fulfilled, (state, action) => {
+        const org = state.organizations.find(
+          (o) => o.slug === action.payload.slug
+        );
+        const idx = org?.services.findIndex(
+          (s) => s.id === action.payload.service.id
+        );
+        if (org && idx !== undefined && idx > -1) {
+          org.services[idx] = action.payload.service;
+        }
+      })
+      .addCase(deleteOrgService.fulfilled, (state, action) => {
+        const org = state.organizations.find(
+          (o) => o.slug === action.payload.slug
+        );
+        if (org) {
+          org.services = org.services.filter(
+            (s) => s.id !== action.payload.serviceId
+          );
+        }
+      })
+
+      .addCase(createOrgIncident.fulfilled, (state, action) => {
+        const org = state.organizations.find(
+          (o) => o.slug === action.payload.slug
+        );
+        org?.incidents.push(action.payload.incident);
+      })
+      .addCase(updateOrgIncident.fulfilled, (state, action) => {
+        const org = state.organizations.find(
+          (o) => o.slug === action.payload.slug
+        );
+        const idx = org?.incidents.findIndex(
+          (i) => i.id === action.payload.incident.id
+        );
+        if (org && idx !== undefined && idx > -1) {
+          org.incidents[idx] = {
+            ...action.payload.incident,
+            updates: org.incidents[idx].updates,
+          };
+        }
+      })
+      .addCase(deleteOrgIncident.fulfilled, (state, action) => {
+        const org = state.organizations.find(
+          (o) => o.slug === action.payload.slug
+        );
+        if (org) {
+          org.incidents = org.incidents.filter(
+            (i) => i.id !== action.payload.incidentId
+          );
+        }
+      })
+      .addCase(createIncidentUpdate.fulfilled, (state, action) => {
+        const { slug, incidentId, update } = action.payload;
+        const org = state.organizations.find((o) => o.slug === slug);
+        const incident = org?.incidents.find((i) => i.id === incidentId);
+        if (incident) {
+          incident.updates.push(update);
+        }
+      });
   },
 });
 
-export const {
-  addOrganization,
-  addServiceToOrg,
-  updateServiceInOrg,
-  deleteServiceInOrg,
-  addIncidentToOrg,
-  updateIncidentInOrg,
-  deleteIncidentInOrg,
-  addIncidentUpdateToOrg,
-} = organizationsSlice.actions;
-
+export const { addIncidentUpdateToOrg } = organizationsSlice.actions;
 export default organizationsSlice.reducer;
