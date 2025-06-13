@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from app.database import Base, engine
 from app.routes import organizations_router
+from app.routes.websocket import router as websocket_router
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -8,6 +9,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 app.include_router(organizations_router, prefix="/api/organizations", tags=["Organizations"])
+app.include_router(websocket_router)
 
 origins = [
     "http://localhost:5173",

@@ -1,4 +1,6 @@
 from logging.config import fileConfig
+from dotenv import load_dotenv
+import os
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -11,6 +13,8 @@ from app import models
 # access to the values within the .ini file in use.
 config = context.config
 
+load_dotenv()
+
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
@@ -21,6 +25,11 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
+# Replace direct .ini DB URL with env variable if present
+if os.getenv("DATABASE_URL"):
+    config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL"))
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

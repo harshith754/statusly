@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SignedIn } from "@clerk/clerk-react";
 import { Provider } from "react-redux";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -26,11 +26,35 @@ function AppContent() {
   const loading = useSelector(
     (state: RootState) => state.organizations.loading
   );
+  const [wsFetching, setWsFetching] = useState(false);
+  const WS_URL = import.meta.env.VITE_WS_URL;
+
   useEffect(() => {
     dispatch(fetchOrganizations());
+    const ws = new WebSocket(WS_URL);
+    ws.onopen = () => {
+      console.log("[WebSocket] Connected to server");
+    };
+    ws.onmessage = (event) => {
+      const data = event.data;
+      console.log("[WebSocket] Message received:", data);
+      if (data === "generic_update") {
+        setWsFetching(true);
+        dispatch(fetchOrganizations()).finally(() => setWsFetching(false));
+      }
+    };
+    ws.onclose = () => {
+      console.log("[WebSocket] Disconnected");
+    };
+    ws.onerror = (err) => {
+      console.error("[WebSocket] Error:", err);
+    };
+    return () => {
+      ws.close();
+    };
   }, [dispatch]);
 
-  if (loading) {
+  if (loading && !wsFetching) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-zinc-950 text-zinc-100">
         <div className="text-center space-y-2">
