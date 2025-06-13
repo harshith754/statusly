@@ -7,7 +7,7 @@ import {
 } from "@clerk/clerk-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Settings, BarChart3 } from "lucide-react";
+import { Settings, BarChart3, User } from "lucide-react";
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -25,29 +25,25 @@ const Navbar: React.FC = () => {
           </span>
         </Link>
 
-        {/* Navigation */}
-        <nav className="flex items-center space-x-1">
+        {/* Auth Section */}
+        <div className="flex items-center pr-3.5 gap-5">
           <SignedIn>
             <Button
               variant="ghost"
               size="sm"
               asChild
               className={`relative text-zinc-300 hover:text-zinc-100 hover:bg-zinc-800/50 ${
-                location.pathname.startsWith("/settings")
+                location.pathname.startsWith("/manage-users")
                   ? "bg-zinc-800 text-zinc-100"
                   : ""
               }`}
             >
-              <Link to="/settings" className="flex items-center space-x-2">
-                <Settings className="h-4 w-4" />
-                <span className="hidden sm:inline">Settings</span>
+              <Link to="/manage-users" className="flex items-center ">
+                <User className="h-4 w-4" />
+                <span className="hidden sm:inline">Manage Users</span>
               </Link>
             </Button>
           </SignedIn>
-        </nav>
-
-        {/* Auth Section */}
-        <div className="flex items-center">
           <SignedOut>
             <SignInButton />
           </SignedOut>

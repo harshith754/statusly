@@ -5,7 +5,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import DashboardPage from "@/pages/dashboard";
 import ServicesPage from "@/pages/services";
 import IncidentsPage from "@/pages/incidents";
-import SettingsPage from "@/pages/settings";
+import ManageUsers from "@/pages/manage-users";
 import Navbar from "@/components/Navbar";
 import store from "@/store";
 import { fetchOrganizations } from "@/slices/organizationsThunks";
@@ -74,10 +74,10 @@ function AppContent() {
           <Route path="/services/:slug" element={<ServicesPage />} />
           <Route path="/incidents/:slug" element={<IncidentsPage />} />
           <Route
-            path="/settings"
+            path="/manage-users"
             element={
               <SignedIn>
-                <SettingsPage />
+                <ManageUsers />
               </SignedIn>
             }
           />
