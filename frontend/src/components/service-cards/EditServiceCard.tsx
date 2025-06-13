@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Save, X, Edit3, Shield, Activity, AlertTriangle } from "lucide-react";
-import type { OrgServiceStatus } from "@/slices/organizationsSlice";
+import type { OrgServiceStatus } from "@/types/organization";
 
 const STATUS_OPTIONS: { value: OrgServiceStatus; label: string; icon: React.ElementType }[] = [
   { value: "Operational", label: "Operational", icon: Shield },
