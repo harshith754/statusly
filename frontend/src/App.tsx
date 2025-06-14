@@ -12,6 +12,7 @@ import { fetchOrganizations } from "@/slices/organizationsThunks";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/store";
+import ManageOrganizations from "@/pages/manage-organizations";
 
 export default function App() {
   return (
@@ -78,6 +79,14 @@ function AppContent() {
             element={
               <SignedIn>
                 <ManageUsers />
+              </SignedIn>
+            }
+          />
+          <Route
+            path="/manage-organizations"
+            element={
+              <SignedIn>
+                <ManageOrganizations />
               </SignedIn>
             }
           />

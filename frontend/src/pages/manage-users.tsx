@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useUser, useOrganization } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import Sidebar from "../components/Sidebar";
 import { Button } from "@/components/ui/button";
 
@@ -10,7 +10,6 @@ interface ClerkUser {
 
 const ManageUsers: React.FC = () => {
   const { user } = useUser();
-  const { organization } = useOrganization();
   const [users, setUsers] = useState<ClerkUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [orgEdit, setOrgEdit] = useState<{ [userId: string]: string }>({});

@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { OrgIncident, OrgIncidentStatus } from "@/types/organization";
 import { AlertCircle, CheckCircle, MessageSquare } from "lucide-react";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import type { RootState } from "@/store";
 
 function getAllTimelineEvents(incidents: OrgIncident[]) {
   const allEvents: Array<{
@@ -68,14 +66,11 @@ function getStatusBadgeColor(status: OrgIncidentStatus) {
   }
 }
 
-export default function IncidentTimeline() {
+export default function IncidentTimeline( {incidents}: {incidents: OrgIncident[]}) {
   const [statusFilter, setStatusFilter] = useState<
     "all" | "Ongoing" | "Resolved"
-  >("all");
-  const incidents = useSelector((state: RootState) => {
-    const org = state.organizations.organizations[0];
-    return org ? org.incidents : [];
-  });
+    >("all");
+  
   const filteredIncidents =
     statusFilter === "all"
       ? incidents

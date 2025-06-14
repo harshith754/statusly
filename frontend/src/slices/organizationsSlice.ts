@@ -9,6 +9,9 @@ import {
   fetchOrganizations,
   updateOrgIncident,
   updateOrgService,
+  createOrganization,
+  updateOrganization,
+  deleteOrganization,
 } from "./organizationsThunks";
 
 const initialState: OrganizationsState = {
@@ -54,6 +57,23 @@ const organizationsSlice = createSlice({
       .addCase(fetchOrganizations.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Failed to load organizations";
+      })
+      // ORG CRUD
+      .addCase(createOrganization.fulfilled, (state, action) => {
+        state.organizations.push(action.payload);
+      })
+      .addCase(updateOrganization.fulfilled, (state, action) => {
+        const idx = state.organizations.findIndex(
+          (o) => o.slug === action.payload.slug
+        );
+        if (idx > -1) {
+          state.organizations[idx] = action.payload;
+        }
+      })
+      .addCase(deleteOrganization.fulfilled, (state, action) => {
+        state.organizations = state.organizations.filter(
+          (o) => o.slug !== action.payload
+        );
       })
 
       // SERVICES

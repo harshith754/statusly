@@ -49,9 +49,21 @@ def add_incident_update(db: Session, update: models.IncidentUpdate):
     db.refresh(update)
     return update
 
+def update_organization(db: Session, slug: str, payload):
+    org = get_org_by_slug(db, slug)
+    if not org:
+        return None
+    org.name = payload.name
+    org.slug = payload.slug
+    db.commit()
+    db.refresh(org)
+    return org
 
-
-
+def delete_organization(db: Session, slug: str):
+    org = get_org_by_slug(db, slug)
+    if org:
+        db.delete(org)
+        db.commit()
 
 def seed_demo_data(db: Session):
     if db.query(Organization).filter_by(slug="demo-org").first():

@@ -13,6 +13,9 @@ import {
   updateIncident,
   deleteIncident,
   addIncidentUpdate,
+  createOrganization as apiCreateOrganization,
+  updateOrganization as apiUpdateOrganization,
+  deleteOrganization as apiDeleteOrganization,
 } from "@/api/organizations";
 
 export const fetchOrganizations = createAsyncThunk(
@@ -85,5 +88,35 @@ export const createIncidentUpdate = createAsyncThunk(
       incidentId: payload.incidentId,
       update: data,
     };
+  }
+);
+
+export const createOrganization = createAsyncThunk(
+  "organizations/createOrganization",
+  async (payload: { name: string; slug: string }) => {
+    const data = await apiCreateOrganization({
+      name: payload.name,
+      slug: payload.slug,
+    });
+    return data;
+  }
+);
+
+export const updateOrganization = createAsyncThunk(
+  "organizations/updateOrganization",
+  async (payload: { id: string; name: string; slug: string }) => {
+    const data = await apiUpdateOrganization(payload.id, {
+      name: payload.name,
+      slug: payload.slug,
+    });
+    return data;
+  }
+);
+
+export const deleteOrganization = createAsyncThunk(
+  "organizations/deleteOrganization",
+  async (payload: { id: string }) => {
+    await apiDeleteOrganization(payload.id);
+    return payload.id;
   }
 );

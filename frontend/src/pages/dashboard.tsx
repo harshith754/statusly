@@ -139,7 +139,7 @@ const DashboardPage: React.FC = () => {
               Recent Updates
             </h2>
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg p-4">
-              <IncidentTimeline />
+              <IncidentTimeline incidents={incidents}/>
             </div>
           </div>
         </div>

@@ -23,6 +23,18 @@ export const createOrganization = async (
   return res.data;
 };
 
+export const updateOrganization = async (
+  slug: string,
+  org: Pick<Organization, "slug" | "name">
+): Promise<Organization> => {
+  const res = await axios.put(`${API_URL}/organizations/${slug}`, org);
+  return res.data;
+};
+
+export const deleteOrganization = async (slug: string): Promise<void> => {
+  await axios.delete(`${API_URL}/organizations/${slug}`);
+};
+
 // ----------------------------
 // Services
 // ----------------------------
